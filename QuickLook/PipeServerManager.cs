@@ -17,11 +17,13 @@
 
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Principal;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -124,9 +126,16 @@ namespace QuickLook
 
             var wParam = msg.Substring(0, split);
             var lParam = msg.Substring(split + 1, msg.Length - split - 1);
-
+            
             if (!string.IsNullOrEmpty(lParam))
+            {
+                if (IsImage(lParam))
+                {
+                    var tParam = lParam;
+                    lParam = OpenTempCopyFile(tParam);              
+                }
                 lParam = ResolveShortcut(lParam);
+            }
 
             switch (wParam)
             {
@@ -164,6 +173,51 @@ namespace QuickLook
                     return true;
                 default:
                     return false;
+            }
+        }
+
+        public static string CleanFileName(string fileName)
+        {
+            String ret = Regex.Replace(fileName.Trim(), "[^A-Za-z0-9_. ]+", " ");
+            return ret;
+        }
+        
+        public static string OpenTempCopyFile(string sourceFile)
+        {
+            try
+            {
+                var fileName = Path.GetFileName(sourceFile);
+                var targetPath = Path.GetTempPath();
+                var cleanFileName = CleanFileName(fileName);
+                var destFile = Path.Combine(targetPath, cleanFileName);
+
+                if (!File.Exists(destFile))
+                {
+                    File.Copy(sourceFile, destFile, true);
+                }
+                sourceFile = destFile;
+                return sourceFile;
+            }
+            catch (FileNotFoundException ex)
+            {
+                return sourceFile;
+            }
+        }
+
+        public static bool IsImage(string filename)
+        {
+            try
+            {
+                Image newImage = Image.FromFile(filename);
+                return true;
+            }
+            catch (OutOfMemoryException ex)
+            {
+                return false;
+            }
+            catch (FileNotFoundException ex)
+            {
+                return false;
             }
         }
 
