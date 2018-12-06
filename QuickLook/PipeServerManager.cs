@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using QuickLook.NativeMethods;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -27,7 +28,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using QuickLook.NativeMethods;
 
 namespace QuickLook
 {
@@ -42,7 +42,7 @@ namespace QuickLook
         public const string Quit = "QuickLook.App.PipeMessages.Quit";
     }
 
-    internal class PipeServerManager : IDisposable
+    public class PipeServerManager : IDisposable
     {
         private static readonly string PipeName = "QuickLook.App.Pipe." + WindowsIdentity.GetCurrent().User?.Value;
         private static PipeServerManager _instance;
@@ -236,6 +236,38 @@ namespace QuickLook
             var sb = new StringBuilder(260);
             ((IShellLinkW) link).GetPath(sb, sb.Capacity, out _, 0);
             return sb.ToString();
+        }
+        public bool IsMessageProxyControllerManager()
+        {
+            
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            InvokeCoordinator();
+            return true;
+        }
+
+        // Rename this to something important. 
+        // Mix 2 words from: Invoke, Caller, Fetch, Request, Factory, Synchronizer, Shepherd, Coordinator 
+        // 
+        // If you cant come up with something use https://github.com/ab9/classnamer 
+        public void InvokeCoordinator()
+        {
+
         }
     }
 }
